@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Étoile | Minimalist Elegance</title>
+    <meta name="description" content="Experience the finest dining at L'Étoile.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header id="navbar">
+        <div class="logo">L'Étoile<span>.</span></div>
+        <nav>
+            <ul>
+                <li><a href="#about">Atmosphere</a></li>
+                <li><a href="#menu">Menu</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+        <button class="ghost-btn-light nav-btn"><span>Reservations</span></button>
+    </header>
+
+    <main>
+        <!-- Hero Section with Video Background -->
+        <section id="hero">
+            <div class="video-container">
+                <video autoplay loop muted playsinline id="bg-video">
+                    <source src="assets/videos/2.mp4" type="video/mp4">
+                </video>
+                <div class="video-overlay-light"></div>
+            </div>
+            
+            <div class="hero-content">
+                <h1 class="fade-up">L'Étoile</h1>
+                <p class="fade-up delay-1">The Art of Fine Dining</p>
+                <div class="cta-group fade-up delay-2">
+                    <button class="noise-btn">
+                        <canvas class="noise-canvas"></canvas>
+                        <span class="noise-label">Reserve Now</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Culinary Experience Section -->
+        <section id="about" class="experience-section">
+            <div class="section-header fade-up">
+                <h2>A Modern Approach</h2>
+                <p>Where classic techniques meet contemporary vision.</p>
+            </div>
+            
+            <div class="bento-grid">
+                <div class="bento-item glow-card-light fade-up">
+                    <video autoplay loop muted playsinline class="bento-video">
+                        <source src="assets/videos/3.mp4" type="video/mp4">
+                    </video>
+                    <div class="bento-content">
+                        <h3>Purity</h3>
+                    </div>
+                </div>
+                <div class="bento-item glow-card-light fade-up delay-1">
+                    <video autoplay loop muted playsinline class="bento-video">
+                        <source src="assets/videos/4.mp4" type="video/mp4">
+                    </video>
+                    <div class="bento-content">
+                        <h3>Simplicity</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="menu" class="menu-preview">
+            <div class="menu-content fade-up">
+                <h2>Refined Taste</h2>
+                <p>Our minimalist tasting menu focuses on the true essence of each ingredient.</p>
+                <button class="ghost-btn-light"><span>Discover</span></button>
+            </div>
+            <div class="menu-video-container fade-up delay-1">
+                <video autoplay loop muted playsinline class="menu-video">
+                    <source src="assets/videos/5.mp4" type="video/mp4">
+                </video>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="brand">
+                <h2>L'Étoile</h2>
+            </div>
+            <div class="contact-info">
+                <p>Minimalist Elegance.</p>
+                <p><a href="mailto:reservations@letoile.com">reservations@letoile.com</a></p>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 L'Étoile Prototype Design. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
