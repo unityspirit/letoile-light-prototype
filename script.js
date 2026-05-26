@@ -154,4 +154,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.querySelectorAll('.noise-btn').forEach(initNoiseButton);
+
+    // 5. Cinematic Scroll Background
+    const scrollVideo = document.getElementById('scroll-bg-video');
+    const scrollOverlay = document.getElementById('scroll-bg-overlay');
+    const heroSection = document.getElementById('hero');
+
+    if (scrollVideo && heroSection) {
+        let targetTime = 0;
+        let currentTime = 0;
+        let isReady = false;
+        let duration = 0;
+
+        scrollVideo.addEventListener('loadedmetadata', () => {
+            isReady = true;
+            duration = scrollVideo.duration;
+            scrollVideo.currentTime = 0.01; // Force first frame
+        });
+
+        window.addEventListener('scroll', () => {
+            if (!isReady || !duration) return;
+            const heroHeight = heroSection.offsetHeight;
+            const scrollY = window.scrollY;
+            
+            if (scrollY >= heroHeight) {
+                scrollVideo.classList.add('visible');
+                scrollOverlay.classList.add('visible');
+                
+                const scrollableDistance = document.documentElement.scrollHeight - window.innerHeight - heroHeight;
+                let progress = 0;
+                if (scrollableDistance > 0) {
+                    progress = (scrollY - heroHeight) / scrollableDistance;
+                }
+                progress = Math.max(0, Math.min(1, progress));
+                targetTime = progress * duration;
+            } else {
+                scrollVideo.classList.remove('visible');
+                scrollOverlay.classList.remove('visible');
+            }
+        }, { passive: true });
+
+        function renderLoop() {
+            if (isReady && Math.abs(targetTime - currentTime) > 0.01) {
+                currentTime += (targetTime - currentTime) * 0.08; // LERP
+                scrollVideo.currentTime = currentTime;
+            }
+            requestAnimationFrame(renderLoop);
+        }
+        requestAnimationFrame(renderLoop);
+    }
 });
