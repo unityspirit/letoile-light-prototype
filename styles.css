@@ -27,19 +27,18 @@ body {
 }
 
 /* --- Cinematic Scroll Background --- */
-#scroll-bg-video {
+#scroll-bg-canvas {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    object-fit: cover;
     z-index: -3;
     opacity: 0;
     transition: opacity 1s ease;
     pointer-events: none;
 }
-#scroll-bg-video.visible {
+#scroll-bg-canvas.visible {
     opacity: 1;
 }
 

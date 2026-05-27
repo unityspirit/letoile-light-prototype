@@ -155,30 +155,98 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.noise-btn').forEach(initNoiseButton);
 
-    // 5. Cinematic Scroll Background
-    const scrollVideo = document.getElementById('scroll-bg-video');
+    // 5. Cinematic Canvas Scroll Background
+    const scrollCanvas = document.getElementById('scroll-bg-canvas');
     const scrollOverlay = document.getElementById('scroll-bg-overlay');
     const heroSection = document.getElementById('hero');
 
-    if (scrollVideo && heroSection) {
-        let targetTime = 0;
-        let currentTime = 0;
+    if (scrollCanvas && heroSection) {
+        const TOTAL_FRAMES = 480;
+        const LERP = 0.08;
+        const CONCURRENCY = 24;
+        
+        const ctx = scrollCanvas.getContext('2d');
+        const frames = new Array(TOTAL_FRAMES);
+        
+        let loadedCount = 0;
         let isReady = false;
-        let duration = 0;
-
-        scrollVideo.addEventListener('loadedmetadata', () => {
+        let currentFrame = 0;
+        let targetFrame = 0;
+        
+        // Resize canvas
+        function resizeCanvas() {
+            scrollCanvas.width = window.innerWidth;
+            scrollCanvas.height = window.innerHeight;
+            if (isReady) drawFrame(Math.round(currentFrame));
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Load frames
+        function frameName(i) {
+            return `assets/frames-webp/frame_${String(i + 1).padStart(6, '0')}.webp`;
+        }
+        
+        async function loadFrame(idx) {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => {
+                    frames[idx] = img;
+                    loadedCount++;
+                    if (loadedCount === 1) {
+                        isReady = true;
+                        drawFrame(0);
+                    }
+                    resolve();
+                };
+                img.onerror = () => {
+                    frames[idx] = null;
+                    loadedCount++;
+                    resolve();
+                };
+                img.src = frameName(idx);
+            });
+        }
+        
+        async function loadAllFrames() {
+            const queue = Array.from({ length: TOTAL_FRAMES }, (_, i) => i);
+            async function worker() {
+                while (queue.length > 0) {
+                    const idx = queue.shift();
+                    await loadFrame(idx);
+                }
+            }
+            await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
+        }
+        
+        loadAllFrames().then(() => {
             isReady = true;
-            duration = scrollVideo.duration;
-            scrollVideo.currentTime = 0.01; // Force first frame
         });
-
+        
+        // Draw frame (cover-fit)
+        function drawFrame(idx) {
+            const img = frames[Math.max(0, Math.min(idx, TOTAL_FRAMES - 1))];
+            if (!img) return;
+            const W = scrollCanvas.width;
+            const H = scrollCanvas.height;
+            const r = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+            const iw = img.naturalWidth * r;
+            const ih = img.naturalHeight * r;
+            const x = (W - iw) / 2;
+            const y = (H - ih) / 2;
+            
+            ctx.clearRect(0, 0, W, H);
+            ctx.drawImage(img, x, y, iw, ih);
+        }
+        
+        // Scroll logic
         window.addEventListener('scroll', () => {
-            if (!isReady || !duration) return;
+            if (!isReady) return;
             const heroHeight = heroSection.offsetHeight;
             const scrollY = window.scrollY;
             
             if (scrollY >= heroHeight) {
-                scrollVideo.classList.add('visible');
+                scrollCanvas.classList.add('visible');
                 scrollOverlay.classList.add('visible');
                 
                 const scrollableDistance = document.documentElement.scrollHeight - window.innerHeight - heroHeight;
@@ -187,17 +255,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     progress = (scrollY - heroHeight) / scrollableDistance;
                 }
                 progress = Math.max(0, Math.min(1, progress));
-                targetTime = progress * duration;
+                targetFrame = progress * (TOTAL_FRAMES - 1);
             } else {
-                scrollVideo.classList.remove('visible');
+                scrollCanvas.classList.remove('visible');
                 scrollOverlay.classList.remove('visible');
             }
         }, { passive: true });
-
+        
+        // Render loop
         function renderLoop() {
-            if (isReady && Math.abs(targetTime - currentTime) > 0.01) {
-                currentTime += (targetTime - currentTime) * 0.08; // LERP
-                scrollVideo.currentTime = currentTime;
+            if (isReady && Math.abs(targetFrame - currentFrame) > 0.01) {
+                currentFrame += (targetFrame - currentFrame) * LERP;
+                drawFrame(Math.round(currentFrame));
             }
             requestAnimationFrame(renderLoop);
         }
